@@ -27,7 +27,7 @@ lat_var = dsSelected.variables['geo_x']
 target_lon = 135.99
 target_lat = 34.968
 
-def TryGetLanLonSortedArray(input_lon, input_lat, input_ds):
+def TryGetLanLonSortedIndexArray(input_lon, input_lat, input_ds):
 
     # 计算经纬度差值
     lon_diff = np.abs(input_ds.geo_y - input_lon)
@@ -51,16 +51,21 @@ def GetDataByAllParams(input_lon, input_lat, input_time):
 
     timeLen = len(timeArr)
     for i in range(0, timeLen):
-        curTimeIndex = timeArr[i]
+        curTimeIndex = timeArr.data[i]
         curTime = dataTime.data[curTimeIndex]
         curDs = ds.sel(time=curTime)
 
-        lanLonArr = TryGetLanLonSortedArray(input_lon, input_lat, curDs)
+        lanLonArr = TryGetLanLonSortedIndexArray(input_lon, input_lat, curDs)
         lanLonLen = len(lanLonArr)
-        for i in range(0, lanLonLen):
-            curDataIndex = lanLonArr[i]
-            returnData = curDs.variables['runoff_mean'].data[curDataIndex]
+        for j in range(0, lanLonLen):
+            curDataIndex = lanLonArr.data[j]
+            dataArr = curDs.variables['runoff_mean'].data
+            returnData = dataArr[curDataIndex]
             if not np.isnan(returnData):
+                # if(returnData > 10000):
+                #     df2 = pd.DataFrame({'runOff' : dataArr}, index=None)
+                #     df2.to_excel('returnData.xlsx', index=False)
+                #     haha = curDataIndex
                 return returnData
             
     return None
@@ -70,23 +75,24 @@ def GetDataByAllParams(input_lon, input_lat, input_time):
 
 df = pd.read_excel('river_na.xlsx')
 
-lon = df['Lon'].values
-lat = df['Lat'].values
-time = df['Date'].values
+dfLonVals = df['Lon'].values
+dfLatVals = df['Lat'].values
+dfTimeVals = df['Date'].values
 
 dataLen = len(df)#查看属性lon的长度
 data_array = np.zeros(dataLen)#建立一个长度为lon长度的空数据集
 for i in range(0, dataLen):
-    curLon = lon[i]
-    curLat = lat[i]
-    curTime = time[i]
+    curLon = dfLonVals[i]
+    curLat = dfLatVals[i]
+    curTime = dfTimeVals[i]
     curData = GetDataByAllParams(curLon, curLat, curTime)
     data_array[i] = curData
 
-lon_series = pd.Series(lon, name='Lon')
-lat_series = pd.Series(lat, name='Lat')
-time_series = pd.Series(time, name='Date')
-df = pd.DataFrame({'Lat': lat_series, 'Lon':lon_series , 'DateTime': time_series , 'runOff' : data_array}, index=None)
+lon_series = pd.Series(dfLonVals, name = 'Lon')
+lat_series = pd.Series(dfLatVals, name = 'Lat')
+time_series = pd.Series(dfTimeVals, name = 'Date')
+df = pd.DataFrame({'Lat': lat_series, 'Lon':lon_series , 
+                   'DateTime': time_series , 'runOff' : data_array}, index=None)
 df.to_excel('na_new.xlsx', index=False)
 
 # lon_idx = np.abs(dsSelected.geo_y - target_lon).argmin().item()
