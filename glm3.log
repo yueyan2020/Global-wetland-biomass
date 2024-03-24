@@ -1,0 +1,11 @@
+time,elapsed_seconds,message
+2024-03-24 19:06:18,2.5211e-05,PEST++ performance logger started
+2024-03-24 19:06:18,0.000172015,starting to process control file
+2024-03-24 19:06:18,0.0127373,finished processing control file
+2024-03-24 19:06:18,0.0203463,starting basic model IO error checking
+2024-03-24 19:06:18,0.0124068,finished basic model IO error checking
+2024-03-24 19:06:18,0.000564688,loading parcov
+2024-03-24 19:06:18,0.00423606,beginning iteration 1
+2024-03-24 19:06:18,0.0001148,commencing to build jacobian parameter sets
+2024-03-24 19:06:18,0.00187613,jacobian parameter sets built, commencing model runs
+2024-03-24 19:58:39,3140.47,jacobian runs complete, processing runs
